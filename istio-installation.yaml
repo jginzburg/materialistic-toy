@@ -1,0 +1,56 @@
+apiVersion: maistra.io/v1
+kind: ServiceMeshControlPlane
+metadata:
+  name: istio-installation
+  namespace: istio-system
+spec:
+  istio:
+    global:
+      controlPlaneSecurityEnabled: true
+      mtls:
+        enabled: true
+      proxy:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 128Mi
+    gateways:
+      istio-egressgateway:
+        autoscaleEnabled: false
+      istio-ingressgateway:
+        autoscaleEnabled: false
+        ior_enabled: false
+    mixer:
+      enabled: true
+      policy:
+        autoscaleEnabled: false
+      telemetry:
+        autoscaleEnabled: false
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1G
+          limits:
+            cpu: 500m
+            memory: 4G
+    pilot:
+      autoscaleEnabled: false
+      traceSampling: 100.0
+    kiali:
+      enabled: true
+    tracing:
+      enabled: true
+      jaeger:
+        tag: 1.13.1
+        template: all-in-one # doesn't need Elasticsearch
+---
+apiVersion: maistra.io/v1
+kind: ServiceMeshMemberRoll
+metadata:
+  name: default
+spec:
+  members:
+  - myproject
